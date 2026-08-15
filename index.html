@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benjamin Paul P — Hardware &amp; Embedded Systems Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#0a0f0c;
+    --bg-panel:#101712;
+    --bg-panel-2:#141d17;
+    --copper:#c17f4a;
+    --copper-bright:#e0a868;
+    --signal:#6fe7c9;
+    --amber:#e2a83d;
+    --ink:#eef2ee;
+    --ink-dim:#8a998f;
+    --ink-dimmer:#576058;
+    --line:#233129;
+    --line-bright:#33463b;
+    --radius:2px;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  ::selection{background:var(--signal);color:var(--bg-void);}
+  body{
+    background:var(--bg-void);
+    color:var(--ink);
+    font-family:var(--body);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg-void);}
+  ::-webkit-scrollbar-thumb{background:var(--line-bright);border-radius:10px;}
+
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:var(--mono);}
+
+  /* background trace texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.14;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px; position:relative; z-index:2;}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(10,15,12,0.72);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    max-width:1180px; margin:0 auto; padding:0 32px;
+    height:64px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--display); font-weight:700; font-size:17px; letter-spacing:0.02em;
+  }
+  .logo .chip-mark{
+    width:22px; height:22px; border:1.5px solid var(--copper-bright);
+    border-radius:3px; position:relative; flex-shrink:0;
+  }
+  .logo .chip-mark::before{
+    content:""; position:absolute; top:3px; left:3px; right:3px; bottom:3px;
+    background:var(--signal); opacity:0.85; border-radius:1px;
+  }
+  .navlinks{display:flex; align-items:center; gap:2px;}
+  .navlinks a{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.09em;
+    color:var(--ink-dim); padding:10px 14px; border-radius:3px;
+    transition:color .25s ease;
+    position:relative;
+  }
+  .navlinks a::after{
+    content:""; position:absolute; left:14px; right:14px; bottom:6px; height:1px;
+    background:var(--signal); transform:scaleX(0); transform-origin:left;
+    transition:transform .3s ease;
+  }
+  .navlinks a:hover, .navlinks a.active{color:var(--ink);}
+  .navlinks a.active::after{transform:scaleX(1);}
+  .nav-status{
+    display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; color:var(--ink-dimmer);
+  }
+  .dot-live{width:6px; height:6px; border-radius:50%; background:var(--signal); box-shadow:0 0 8px var(--signal); animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .navburger{display:none;}
+
+  /* ---------- HERO ---------- */
+  #hero{
+    position:relative; min-height:100vh; display:flex; align-items:center;
+    padding-top:64px; overflow:hidden;
+  }
+  #chip-canvas{
+    position:absolute; inset:0; z-index:1; opacity:0.9;
+  }
+  .hero-inner{position:relative; z-index:2; width:100%;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.18em; color:var(--signal);
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .eyebrow::before{content:"//"; color:var(--copper-bright);}
+  h1.name{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(42px, 8vw, 96px);
+    line-height:0.98; letter-spacing:-0.01em;
+    max-width:900px;
+  }
+  .hero-sub{
+    margin-top:26px; max-width:560px; font-size:17px; line-height:1.65; color:var(--ink-dim);
+  }
+  .hero-cta{display:flex; gap:14px; margin-top:38px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.07em;
+    padding:14px 26px; border-radius:2px; cursor:pointer; border:1px solid transparent;
+    transition:all .25s ease; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{background:var(--signal); color:var(--bg-void); font-weight:600;}
+  .btn-primary:hover{background:var(--copper-bright); transform:translateY(-2px);}
+  .btn-ghost{border-color:var(--line-bright); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--signal); color:var(--signal); transform:translateY(-2px);}
+  .hero-meta{
+    display:flex; gap:34px; margin-top:64px; flex-wrap:wrap;
+  }
+  .hero-meta div{font-family:var(--mono); font-size:11px; color:var(--ink-dimmer);}
+  .hero-meta strong{display:block; color:var(--ink); font-size:13px; margin-bottom:4px; font-weight:500;}
+  .scroll-cue{
+    position:absolute; bottom:34px; left:32px; z-index:2;
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:10.5px; color:var(--ink-dimmer); letter-spacing:0.1em;
+  }
+  .scroll-cue .bar{width:1px; height:34px; background:linear-gradient(var(--signal), transparent); animation:scrolldrop 1.8s ease-in-out infinite;}
+  @keyframes scrolldrop{0%{transform:scaleY(0); transform-origin:top;}50%{transform:scaleY(1); transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0); transform-origin:bottom;}}
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section{position:relative; padding:120px 0; z-index:2;}
+  .sec-head{display:flex; align-items:baseline; gap:18px; margin-bottom:56px;}
+  .sec-num{font-family:var(--mono); font-size:13px; color:var(--copper-bright); letter-spacing:0.05em;}
+  .sec-title{font-family:var(--display); font-weight:700; font-size:clamp(26px,4vw,38px); letter-spacing:-0.01em;}
+  .sec-line{flex:1; height:1px; background:var(--line);}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .8s ease, transform .8s ease;}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  /* ---------- ABOUT ---------- */
+  #about .about-grid{display:grid; grid-template-columns:1.15fr 0.85fr; gap:64px;}
+  #about p{font-size:16.5px; line-height:1.85; color:var(--ink-dim); margin-bottom:18px;}
+  #about p strong{color:var(--ink); font-weight:600;}
+  .spec-table{border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  .spec-row{
+    display:grid; grid-template-columns:110px 1fr; gap:14px;
+    padding:16px 18px; border-bottom:1px solid var(--line);
+    font-family:var(--mono); font-size:12.5px;
+  }
+  .spec-row:last-child{border-bottom:none;}
+  .spec-row:nth-child(odd){background:var(--bg-panel);}
+  .spec-row span:first-child{color:var(--ink-dimmer); letter-spacing:0.06em;}
+  .spec-row span:last-child{color:var(--ink);}
+
+  /* ---------- EXPERIENCE ---------- */
+  .timeline{position:relative; padding-left:40px;}
+  .timeline::before{
+    content:""; position:absolute; left:5px; top:6px; bottom:6px; width:1px;
+    background:linear-gradient(var(--copper-bright), var(--signal) 60%, transparent);
+  }
+  .t-item{position:relative; padding-bottom:8px;}
+  .t-node{
+    position:absolute; left:-40px; top:4px; width:11px; height:11px; border-radius:50%;
+    background:var(--bg-void); border:2px solid var(--signal); box-shadow:0 0 0 4px var(--bg-void);
+  }
+  .t-role{font-family:var(--display); font-weight:600; font-size:21px;}
+  .t-company{font-family:var(--mono); font-size:12.5px; color:var(--copper-bright); margin-top:6px; letter-spacing:0.03em;}
+  .t-dates{font-family:var(--mono); font-size:11.5px; color:var(--ink-dimmer); margin-top:2px;}
+  .t-list{margin-top:18px; display:flex; flex-direction:column; gap:11px;}
+  .t-list li{list-style:none; display:flex; gap:12px; font-size:14.5px; line-height:1.6; color:var(--ink-dim);}
+  .t-list li::before{content:"▸"; color:var(--signal); flex-shrink:0; font-size:12px; margin-top:4px;}
+
+  /* ---------- SKILLS ---------- */
+  .skill-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .skill-mod{background:var(--bg-panel); padding:24px; transition:background .3s ease;}
+  .skill-mod:hover{background:var(--bg-panel-2);}
+  .skill-mod-h{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; color:var(--copper-bright);
+    display:flex; align-items:center; gap:8px; margin-bottom:16px;
+  }
+  .skill-mod-h::before{content:""; width:6px; height:6px; background:var(--signal); border-radius:50%;}
+  .pin-list{display:flex; flex-direction:column; gap:9px;}
+  .pin-item{display:flex; align-items:center; gap:9px; font-size:13.5px; color:var(--ink);}
+  .pin-item::before{content:""; width:5px; height:5px; border:1px solid var(--ink-dimmer); border-radius:50%; flex-shrink:0;}
+
+  /* ---------- PROJECTS ---------- */
+  .proj-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:22px;}
+  .proj-card{
+    border:1px solid var(--line); background:var(--bg-panel); padding:30px;
+    border-radius:var(--radius); position:relative; overflow:hidden;
+    transform-style:preserve-3d; will-change:transform;
+    transition:border-color .3s ease, box-shadow .3s ease;
+  }
+  .proj-card:hover{border-color:var(--line-bright); box-shadow:0 20px 50px -20px rgba(0,0,0,0.6);}
+  .proj-glare{
+    position:absolute; inset:0; pointer-events:none; opacity:0;
+    background:radial-gradient(circle at var(--gx,50%) var(--gy,50%), rgba(111,231,201,0.10), transparent 60%);
+    transition:opacity .3s ease;
+  }
+  .proj-card:hover .proj-glare{opacity:1;}
+  .proj-id{font-family:var(--mono); font-size:11px; color:var(--ink-dimmer); letter-spacing:0.08em;}
+  .proj-title{font-family:var(--display); font-weight:600; font-size:20px; margin-top:10px; margin-bottom:14px;}
+  .proj-tag{
+    display:inline-block; font-family:var(--mono); font-size:10px; color:var(--signal);
+    border:1px solid rgba(111,231,201,0.35); padding:3px 8px; border-radius:20px; margin-bottom:16px;
+  }
+  .proj-card ul{display:flex; flex-direction:column; gap:9px;}
+  .proj-card li{list-style:none; font-size:13.5px; line-height:1.6; color:var(--ink-dim); display:flex; gap:10px;}
+  .proj-card li::before{content:"—"; color:var(--copper-bright); flex-shrink:0;}
+  .proj-card.wide{grid-column:span 2;}
+
+  /* ---------- AWARDS / CERTS ---------- */
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:64px;}
+  .list-block h3{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.1em; color:var(--ink-dimmer);
+    margin-bottom:22px; padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .award-item, .cert-item{padding:18px 0; border-bottom:1px solid var(--line); display:flex; gap:16px;}
+  .award-item:last-child, .cert-item:last-child{border-bottom:none;}
+  .award-mark{font-family:var(--mono); color:var(--amber); font-size:13px; flex-shrink:0; margin-top:1px;}
+  .award-title{font-weight:600; font-size:15px; color:var(--ink);}
+  .award-sub{font-size:13px; color:var(--ink-dim); margin-top:4px; line-height:1.5;}
+
+  .tag-cloud{display:flex; flex-wrap:wrap; gap:10px; margin-top:56px;}
+  .tag-cloud span{
+    font-family:var(--mono); font-size:11.5px; padding:8px 14px; border:1px solid var(--line-bright);
+    border-radius:20px; color:var(--ink-dim);
+  }
+
+  /* ---------- CONTACT ---------- */
+  #contact{padding-bottom:80px;}
+  .contact-box{
+    border:1px solid var(--line); border-radius:var(--radius); padding:64px 48px;
+    background:radial-gradient(circle at 20% 20%, rgba(111,231,201,0.06), transparent 55%), var(--bg-panel);
+    text-align:center;
+  }
+  .contact-box h2{
+    font-family:var(--display); font-weight:700; font-size:clamp(28px,5vw,46px);
+    max-width:680px; margin:0 auto 18px; line-height:1.15;
+  }
+  .contact-box p{color:var(--ink-dim); font-size:15px; margin-bottom:36px;}
+  .contact-links{display:flex; justify-content:center; gap:14px; flex-wrap:wrap;}
+  footer{padding:32px; text-align:center; font-family:var(--mono); font-size:11px; color:var(--ink-dimmer); border-top:1px solid var(--line);}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:900px){
+    .navlinks{display:none;}
+    #about .about-grid{grid-template-columns:1fr; gap:36px;}
+    .skill-grid{grid-template-columns:repeat(2,1fr);}
+    .proj-grid{grid-template-columns:1fr;}
+    .proj-card.wide{grid-column:span 1;}
+    .two-col{grid-template-columns:1fr; gap:40px;}
+    .hero-meta{gap:22px;}
+  }
+  @media (max-width:520px){
+    .wrap{padding:0 20px;}
+    nav{padding:0 20px;}
+    .skill-grid{grid-template-columns:1fr;}
+    .contact-box{padding:44px 24px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo"><span class="chip-mark"></span>BENJAMIN&nbsp;PAUL&nbsp;P</div>
+    <div class="navlinks" id="navlinks">
+      <a href="#about" data-sec="about">ABOUT</a>
+      <a href="#experience" data-sec="experience">EXPERIENCE</a>
+      <a href="#skills" data-sec="skills">SKILLS</a>
+      <a href="#projects" data-sec="projects">PROJECTS</a>
+      <a href="#awards" data-sec="awards">AWARDS</a>
+      <a href="#contact" data-sec="contact">CONTACT</a>
+    </div>
+    <div class="nav-status"><span class="dot-live"></span>OPEN&nbsp;TO&nbsp;WORK</div>
+  </nav>
+</header>
+
+<section id="hero">
+  <canvas id="chip-canvas"></canvas>
+  <div class="wrap hero-inner">
+    <div class="eyebrow">HARDWARE&nbsp;/&nbsp;EMBEDDED&nbsp;SYSTEMS&nbsp;ENGINEER</div>
+    <h1 class="name">BENJAMIN<br>PAUL&nbsp;P</h1>
+    <p class="hero-sub">I build the layer where hardware and software actually talk to each other — microcontroller firmware, real‑time systems, and FPGA logic for healthcare and biomedical devices.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">VIEW PROJECTS →</a>
+      <a href="#contact" class="btn btn-ghost">GET IN TOUCH</a>
+    </div>
+    <div class="hero-meta">
+      <div><strong>Kochi / Thrissur, Kerala</strong>Based in</div>
+      <div><strong>2+ Years</strong>Experience</div>
+      <div><strong>ESP32 · STM32 · FPGA</strong>Core stack</div>
+      <div><strong>B.Tech ECE</strong>IES College of Engineering</div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span class="bar"></span>SCROLL — 01/07</div>
+</section>
+
+<main class="wrap">
+
+  <section id="about">
+    <div class="sec-head reveal"><span class="sec-num">§01</span><span class="sec-title">General Description</span><span class="sec-line"></span></div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p><strong>Hardware and embedded systems engineer</strong> with 2+ years of experience developing microcontroller‑based electronic systems, embedded firmware, and hardware‑software integrated solutions.</p>
+        <p>Experienced in circuit debugging, communication interfaces, prototype development, FPGA‑based digital design, and real‑time embedded systems — with a particular focus on applying electronics and sensing technologies to <strong>healthcare, biomedical devices, and next‑generation engineering applications.</strong></p>
+        <p>Currently building RTOS‑based firmware and IoT‑enabled medical devices at Creogics India, from schematic to field deployment.</p>
+      </div>
+      <div class="reveal">
+        <div class="spec-table mono">
+          <div class="spec-row"><span>ROLE</span><span>Embedded Systems Engineer</span></div>
+          <div class="spec-row"><span>COMPANY</span><span>Creogics India Pvt. Ltd.</span></div>
+          <div class="spec-row"><span>LOCATION</span><span>Kochi, Kerala, India</span></div>
+          <div class="spec-row"><span>EDUCATION</span><span>B.Tech ECE, IES College (2019–23)</span></div>
+          <div class="spec-row"><span>FOCUS</span><span>Healthcare &amp; Biomedical Embedded Systems</span></div>
+          <div class="spec-row"><span>EMAIL</span><span>benjaminpaulp42@gmail.com</span></div>
+          <div class="spec-row"><span>PHONE</span><span>+91 79070 16100</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="sec-head reveal"><span class="sec-num">§02</span><span class="sec-title">Experience</span><span class="sec-line"></span></div>
+    <div class="timeline reveal">
+      <div class="t-item">
+        <div class="t-node"></div>
+        <div class="t-role">Embedded Systems Engineer</div>
+        <div class="t-company">CREOGICS INDIA PVT. LTD. — KOCHI</div>
+        <div class="t-dates">APR 2023 — PRESENT</div>
+        <ul class="t-list">
+          <li>Designed and validated embedded electronic systems based on ESP32/ESP8266 microcontrollers for healthcare monitoring applications.</li>
+          <li>Integrated sensors, displays, communication modules, and peripheral hardware using UART, SPI, I²C, RS485, and CAN interfaces.</li>
+          <li>Performed hardware debugging and troubleshooting using oscilloscopes, logic analyzers, and serial diagnostic tools.</li>
+          <li>Supported prototype assembly, system testing, and field deployment of IoT‑enabled medical and industrial devices.</li>
+          <li>Developed RTOS‑based firmware enabling reliable interaction between hardware subsystems and cloud‑connected services.</li>
+          <li>Collaborated with software and hardware teams to optimize system performance and product reliability.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="sec-head reveal"><span class="sec-num">§03</span><span class="sec-title">Skills &amp; Tools</span><span class="sec-line"></span></div>
+    <div class="skill-grid reveal">
+      <div class="skill-mod"><div class="skill-mod-h">PROGRAMMING</div>
+        <div class="pin-list"><span class="pin-item">C</span><span class="pin-item">C++</span><span class="pin-item">Embedded C</span><span class="pin-item">Python</span></div>
+      </div>
+      <div class="skill-mod"><div class="skill-mod-h">HDL</div>
+        <div class="pin-list"><span class="pin-item">Verilog HDL</span></div>
+      </div>
+      <div class="skill-mod"><div class="skill-mod-h">MICROCONTROLLERS</div>
+        <div class="pin-list"><span class="pin-item">ESP32</span><span class="pin-item">ESP8266</span><span class="pin-item">STM32</span><span class="pin-item">RTOS</span></div>
+      </div>
+      <div class="skill-mod"><div class="skill-mod-h">PROTOCOLS</div>
+        <div class="pin-list"><span class="pin-item">UART</span><span class="pin-item">SPI</span><span class="pin-item">I2C</span><span class="pin-item">CAN</span><span class="pin-item">TCP/IP</span><span class="pin-item">WLAN</span></div>
+      </div>
+      <div class="skill-mod"><div class="skill-mod-h">PLATFORM &amp; TOOLS</div>
+        <div class="pin-list"><span class="pin-item">Git</span><span class="pin-item">Xilinx ISE</span><span class="pin-item">Vivado</span><span class="pin-item">Quartus Prime</span><span class="pin-item">ModelSim</span><span class="pin-item">KiCad</span><span class="pin-item">Embedded Linux</span></div>
+      </div>
+      <div class="skill-mod"><div class="skill-mod-h">DEBUGGING</div>
+        <div class="pin-list"><span class="pin-item">Oscilloscope</span><span class="pin-item">Logic Analyzer</span><span class="pin-item">Unit Testing</span><span class="pin-item">Debuggers</span></div>
+      </div>
+      <div class="skill-mod"><div class="skill-mod-h">SPECIALTIES</div>
+        <div class="pin-list"><span class="pin-item">Multithreading</span><span class="pin-item">Interrupt Handling</span><span class="pin-item">Real‑Time Systems</span><span class="pin-item">HW‑SW Integration</span></div>
+      </div>
+      <div class="skill-mod"><div class="skill-mod-h">HARDWARE DESIGN</div>
+        <div class="pin-list"><span class="pin-item">Schematic Reading</span><span class="pin-item">Sensor Integration</span><span class="pin-item">Circuit Design</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="sec-head reveal"><span class="sec-num">§04</span><span class="sec-title">Research &amp; Projects</span><span class="sec-line"></span></div>
+    <div class="proj-grid">
+      <div class="proj-card reveal" data-tilt>
+        <div class="proj-glare"></div>
+        <div class="proj-id">U1 — FPGA / VERILOG</div>
+        <div class="proj-title">5‑Stage Pipelined RISC Processor</div>
+        <span class="proj-tag">QUARTUS PRIME</span>
+        <ul>
+          <li>Designed and implemented an 8‑bit FPGA‑based RISC processor using Verilog HDL.</li>
+          <li>Developed hazard detection and data forwarding logic to improve execution efficiency.</li>
+          <li>Verified RTL functionality using ModelSim simulations and synthesized designs in Quartus Prime.</li>
+          <li>Evaluated timing performance, resource utilization, and pipeline throughput.</li>
+        </ul>
+      </div>
+      <div class="proj-card reveal" data-tilt>
+        <div class="proj-glare"></div>
+        <div class="proj-id">U2 — RESEARCH PUBLICATION</div>
+        <div class="proj-title">Physdroid</div>
+        <span class="proj-tag">IJIREEICE · DEC 2022</span>
+        <ul>
+          <li>Published in the International Journal of Innovative Research in Electrical, Electronics, Instrumentation and Control Engineering.</li>
+          <li>Developed embedded control systems for robotic physiotherapy applications.</li>
+          <li>Integrated sensors and actuators for patient rehabilitation.</li>
+        </ul>
+      </div>
+      <div class="proj-card reveal" data-tilt>
+        <div class="proj-glare"></div>
+        <div class="proj-id">U3 — IOT DEVICE</div>
+        <div class="proj-title">HABLOSAN</div>
+        <span class="proj-tag">EMBEDDED + AUDIO</span>
+        <ul>
+          <li>Developed an innovative talking automated hand sanitizer for public use.</li>
+          <li>Integrated sensors, microcontrollers, and audio playback into a single low‑cost unit.</li>
+        </ul>
+      </div>
+      <div class="proj-card reveal" data-tilt>
+        <div class="proj-glare"></div>
+        <div class="proj-id">U4 — WEARABLE ELECTRONICS</div>
+        <div class="proj-title">Medical Wearable Device</div>
+        <span class="proj-tag">YOUTH EXCELLENCY AWARD ’23</span>
+        <ul>
+          <li>Designed and developed a wearable electronic prototype supporting muscle rehabilitation patients.</li>
+          <li>Integrated sensors, embedded control electronics, and assistive hardware mechanisms.</li>
+        </ul>
+      </div>
+      <div class="proj-card wide reveal" data-tilt>
+        <div class="proj-glare"></div>
+        <div class="proj-id">U5 — ESP32 + DJANGO</div>
+        <div class="proj-title">Queue Management System</div>
+        <span class="proj-tag">REAL‑TIME NETWORKING</span>
+        <ul>
+          <li>Built an ESP32 + Django‑based token management system for real‑time queue handling.</li>
+          <li>Enabled real‑time communication between hardware devices and the server.</li>
+          <li>Reduced waiting time and improved overall system efficiency.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="awards">
+    <div class="sec-head reveal"><span class="sec-num">§05</span><span class="sec-title">Recognition &amp; Certifications</span><span class="sec-line"></span></div>
+    <div class="two-col">
+      <div class="list-block reveal">
+        <h3>AWARDS</h3>
+        <div class="award-item">
+          <div class="award-mark">✦</div>
+          <div><div class="award-title">Youth Excellency Award — 2023</div><div class="award-sub">For developing a medical wearable device for muscle‑shrinkage patients.</div></div>
+        </div>
+        <div class="award-item">
+          <div class="award-mark">✦</div>
+          <div><div class="award-title">Galactic Problem Solver Award — 2020</div><div class="award-sub">State‑level winner, NASA Space Apps India.</div></div>
+        </div>
+        <div class="award-item">
+          <div class="award-mark">✦</div>
+          <div><div class="award-title">People's Choice Award — 2020</div><div class="award-sub">NASA Space Apps India.</div></div>
+        </div>
+      </div>
+      <div class="list-block reveal">
+        <h3>CERTIFICATIONS</h3>
+        <div class="cert-item"><div><div class="award-title">Chip‑based VLSI Design for Industrial Applications</div><div class="award-sub">Coursera — digital design, VHDL, FPGA architecture, CMOS &amp; Electric VLSI EDA.</div></div></div>
+        <div class="cert-item"><div><div class="award-title">Semiconductor Packaging Specialization</div><div class="award-sub">Coursera · ASU + Intel — packaging design, manufacturing, system integration.</div></div></div>
+        <div class="cert-item"><div><div class="award-title">Google Cloud Architect Specialization</div><div class="award-sub">Coursera</div></div></div>
+        <div class="cert-item"><div><div class="award-title">Embedded Systems and Robotics</div><div class="award-sub">Coursera</div></div></div>
+      </div>
+    </div>
+    <div class="tag-cloud reveal">
+      <span>Embedded Electronic Systems</span>
+      <span>Hardware–Software Co‑Design</span>
+      <span>Intelligent Electronic Systems</span>
+      <span>Digital System Design</span>
+      <span>FPGA &amp; RTL Design</span>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="contact-box reveal">
+      <h2>Let's build something reliable.</h2>
+      <p>Open to embedded systems, hardware‑software integration, and biomedical device roles.</p>
+      <div class="contact-links">
+        <a class="btn btn-primary" href="mailto:benjaminpaulp42@gmail.com">EMAIL ME</a>
+        <a class="btn btn-ghost" href="tel:+917907016100">+91 79070 16100</a>
+        <a class="btn btn-ghost" href="https://gitlab.com/impo-ben" target="_blank" rel="noopener">GITLAB</a>
+        <a class="btn btn-ghost" href="https://linkedin.com" target="_blank" rel="noopener">LINKEDIN</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>© 2026 BENJAMIN PAUL P — KERALA, INDIA · BUILT WITH FIRMWARE‑GRADE ATTENTION TO DETAIL</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============ REVEAL ON SCROLL ============ */
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in-view'); io.unobserve(e.target);} });
+},{threshold:0.15});
+revealEls.forEach(el=>io.observe(el));
+
+/* ============ NAV ACTIVE STATE ============ */
+const navLinks = document.querySelectorAll('.navlinks a');
+const secs = ['about','experience','skills','projects','awards','contact'].map(id=>document.getElementById(id));
+const navIo = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      navLinks.forEach(l=>l.classList.remove('active'));
+      const link = document.querySelector(`.navlinks a[data-sec="${entry.target.id}"]`);
+      if(link) link.classList.add('active');
+    }
+  });
+},{rootMargin:'-40% 0px -55% 0px'});
+secs.forEach(s=>s && navIo.observe(s));
+
+/* ============ CARD 3D TILT ============ */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduceMotion){
+  document.querySelectorAll('[data-tilt]').forEach(card=>{
+    card.style.perspective = '900px';
+    card.addEventListener('mousemove', (e)=>{
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left)/r.width;
+      const y = (e.clientY - r.top)/r.height;
+      const rx = (0.5 - y) * 8;
+      const ry = (x - 0.5) * 10;
+      card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+      card.style.setProperty('--gx', `${x*100}%`);
+      card.style.setProperty('--gy', `${y*100}%`);
+    });
+    card.addEventListener('mouseleave', ()=>{ card.style.transform = 'rotateX(0deg) rotateY(0deg)'; });
+  });
+}
+
+/* ============ THREE.JS HERO CHIP ============ */
+(function(){
+  const canvas = document.getElementById('chip-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.set(0, 1.6, 7.5);
+
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const copper = 0xc17f4a, copperBright = 0xe0a868, signal = 0x6fe7c9;
+
+  const chipGroup = new THREE.Group();
+  chipGroup.position.set(2.4, 0, 0);
+  scene.add(chipGroup);
+
+  // chip body
+  const bodyGeo = new THREE.BoxGeometry(2.2, 0.32, 2.2);
+  const bodyMat = new THREE.MeshStandardMaterial({color:0x0f1a14, metalness:0.4, roughness:0.55});
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  chipGroup.add(body);
+
+  // pin-1 notch
+  const notchGeo = new THREE.CircleGeometry(0.09, 24);
+  const notchMat = new THREE.MeshBasicMaterial({color:signal});
+  const notch = new THREE.Mesh(notchGeo, notchMat);
+  notch.rotation.x = -Math.PI/2;
+  notch.position.set(-0.9, 0.165, -0.9);
+  chipGroup.add(notch);
+
+  // pins around perimeter
+  const pinMat = new THREE.MeshStandardMaterial({color:copperBright, metalness:0.8, roughness:0.3, emissive:0x2a1608, emissiveIntensity:0.4});
+  const pins = [];
+  const pinsPerSide = 8;
+  const half = 1.1;
+  for(let side=0; side<4; side++){
+    for(let i=0; i<pinsPerSide; i++){
+      const t = (i+0.5)/pinsPerSide * (half*2) - half;
+      const pinGeo = new THREE.BoxGeometry(0.16, 0.06, 0.32);
+      const pin = new THREE.Mesh(pinGeo, pinMat);
+      let x=0,z=0,rot=0;
+      if(side===0){x=t; z=half+0.16; rot=0;}
+      if(side===1){x=t; z=-half-0.16; rot=0;}
+      if(side===2){x=half+0.16; z=t; rot=Math.PI/2;}
+      if(side===3){x=-half-0.16; z=t; rot=Math.PI/2;}
+      pin.position.set(x, 0, z);
+      pin.rotation.y = rot;
+      chipGroup.add(pin);
+      pins.push(pin);
+    }
+  }
+
+  // orbiting trace ring (represents a signal trace)
+  const ringGeo = new THREE.TorusGeometry(2.0, 0.008, 8, 100);
+  const ringMat = new THREE.MeshBasicMaterial({color:signal, transparent:true, opacity:0.5});
+  const ring1 = new THREE.Mesh(ringGeo, ringMat);
+  ring1.rotation.x = Math.PI/2.4;
+  chipGroup.add(ring1);
+  const ring2 = new THREE.Mesh(ringGeo.clone(), new THREE.MeshBasicMaterial({color:copperBright, transparent:true, opacity:0.35}));
+  ring2.scale.set(1.35,1.35,1.35);
+  ring2.rotation.x = -Math.PI/3.1;
+  ring2.rotation.z = 0.6;
+  chipGroup.add(ring2);
+
+  // floating solder-point particles
+  const pCount = 140;
+  const pGeo = new THREE.BufferGeometry();
+  const positions = new Float32Array(pCount*3);
+  for(let i=0;i<pCount;i++){
+    positions[i*3] = (Math.random()-0.5)*14;
+    positions[i*3+1] = (Math.random()-0.5)*8;
+    positions[i*3+2] = (Math.random()-0.5)*8 - 2;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  const pMat = new THREE.PointsMaterial({color:signal, size:0.035, transparent:true, opacity:0.55, blending:THREE.AdditiveBlending});
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  // lighting
+  scene.add(new THREE.AmbientLight(0x445048, 1.1));
+  const l1 = new THREE.PointLight(signal, 6, 12); l1.position.set(-3,3,4); scene.add(l1);
+  const l2 = new THREE.PointLight(copperBright, 5, 12); l2.position.set(4,-2,3); scene.add(l2);
+
+  let mouseX=0, mouseY=0;
+  window.addEventListener('mousemove', (e)=>{
+    mouseX = (e.clientX/window.innerWidth - 0.5);
+    mouseY = (e.clientY/window.innerHeight - 0.5);
+  });
+
+  function onResize(){
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+  window.addEventListener('resize', onResize);
+
+  const clock = new THREE.Clock();
+  const speedFactor = reduceMotion ? 0.0 : 1.0;
+  function animate(){
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+    chipGroup.rotation.y = t*0.18*speedFactor + mouseX*0.6;
+    chipGroup.rotation.x = Math.sin(t*0.3)*0.06*speedFactor + mouseY*0.25;
+    chipGroup.position.y = Math.sin(t*0.6)*0.12*speedFactor;
+    ring1.rotation.z = t*0.25*speedFactor;
+    ring2.rotation.z = -t*0.18*speedFactor;
+    particles.rotation.y = t*0.02*speedFactor;
+    pins.forEach((p,i)=>{ p.material.emissiveIntensity = 0.3 + Math.sin(t*2 + i*0.4)*0.25; });
+    camera.position.x += (mouseX*1.2 - camera.position.x)*0.02;
+    camera.lookAt(chipGroup.position);
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>
